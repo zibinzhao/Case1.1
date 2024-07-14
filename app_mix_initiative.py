@@ -73,7 +73,9 @@ variable_selector = st.selectbox('Key variable:',df.columns, index=1)
 st.write('**Count of this variable:**',Counter(df[variable_selector]))
 sns.countplot(x=variable_selector, data=df)
 pl.title('Visualising the key variable', fontsize=10)
-st.pyplot()
+fig = plt.gcf()
+st.pyplot(fig)
+plt.clf()
 
     ####Visualising correlations - Cutomer satisfaction Correlation Heatmap
 st.header("2. Visualising correlations between each variable")
@@ -85,7 +87,9 @@ hm = sns.heatmap(round(corr,2), annot=True, ax=ax, cmap="Reds",fmt='.2f',
             linewidths=.05)
 f.subplots_adjust(top=0.93)
 t= f.suptitle('Cutomer satisfaction Correlation Heatmap', fontsize=14)
-st.pyplot()
+fig = plt.gcf()
+st.pyplot(fig)
+plt.clf()
 
 st.subheader("2.2 Bivariate relations")
 # Set up 2 columns to display in the body of the ap
@@ -95,7 +99,9 @@ V_2 = colbis2.selectbox('Key varaible:',df.columns, index=5)
 st.subheader("Visualising statistical relationships between two varaibles:")
 sns.set()
 sns.relplot(data=df, x=V_2, y=V_1, kind='line', height=5, aspect=2);
-st.pyplot()
+fig = plt.gcf()
+st.pyplot(fig)
+plt.clf()
 
 
 st.subheader("2.3 Multivariate relations")
@@ -106,7 +112,9 @@ V_4 = colbis2.selectbox('Key varaible:',df.columns, index=3, key="Key varaible_2
 V_5 = colbis3.selectbox('interact varaible:',df.columns, index=4)
 st.subheader("Visualising relationships between muti-varaibles:")
 sns.catplot(x=V_4, y=V_3, hue=V_5, kind="point", data=df)
-st.pyplot()
+fig = plt.gcf()
+st.pyplot(fig)
+plt.clf()
 
 ###############Creating Training and Test splits for Classification model###############
 @st.cache_data(persist="disk")
