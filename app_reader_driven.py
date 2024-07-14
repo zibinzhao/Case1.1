@@ -19,6 +19,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score
 import shap
 import matplotlib
 import matplotlib.pyplot as pl
+import matplotlib.pyplot as plt
 import altair as alt
 import seaborn as sns
 import pickle
@@ -37,7 +38,7 @@ if __name__ == '__main__':
     main()
     
 ###############Data Loading###############
-@st.cache(persist=True)
+@st.cache_data(persist="disk")
 def load():
     data= pd.read_csv("https://raw.githubusercontent.com/zibinzhao/Interactivity/main/df_i.csv")
     label= LabelEncoder()
@@ -68,7 +69,9 @@ if st.sidebar.checkbox("Display data", False):
     st.write('Count of variable:',Counter(df[variable_selector]))
     sns.countplot(x=variable_selector, data=df)
     pl.title('The count of the key varaible', fontsize=10)
-    st.pyplot()
+    fig = plt.gcf()
+    st.pyplot(fig)
+    plt.clf()
 
     ####Visualizing correlations - Cutomer satisfaction Correlation Heatmap
     st.subheader("Visualising correlations")
@@ -79,7 +82,9 @@ if st.sidebar.checkbox("Display data", False):
             linewidths=.05)
     f.subplots_adjust(top=0.93)
     t= f.suptitle('Cutomer satisfaction Correlation Heatmap', fontsize=14)
-    st.pyplot()
+    fig = plt.gcf()
+    st.pyplot(fig)
+    plt.clf()
 
     st.sidebar.subheader("Bivariate relations")
     # Set up 2 columns to display in the body of the ap
@@ -89,7 +94,9 @@ if st.sidebar.checkbox("Display data", False):
     st.subheader("Visualising statistical relationships between two varaibles:")
     sns.set()
     sns.relplot(data=df, x=V_2, y=V_1, kind='line', height=5, aspect=2, color='red');
-    st.pyplot()
+    fig = plt.gcf()
+    st.pyplot(fig)
+    plt.clf()
     
     st.sidebar.subheader("Multivariate relations")
     # Set up 3 columns to display in the body of the ap
@@ -99,12 +106,14 @@ if st.sidebar.checkbox("Display data", False):
     V_5 = colbis3.selectbox('interact varaible:',df.columns, index=4)
     st.subheader("Visualising relationships between muti-varaibles:")
     sns.catplot(x=V_4, y=V_3, hue=V_5, kind="point", data=df)
-    st.pyplot()
+    fig = plt.gcf()
+    st.pyplot(fig)
+    plt.clf()
     
 
 
 ###############Creating Training and Test splits for Classification model###############
-@st.cache(persist=True)
+@st.cache_data(persist="disk")
 def split(df):
     y = df['level']
     x = df[['ordered', 'age', 'speed', 'single', 'dist','income']]
@@ -113,7 +122,7 @@ def split(df):
 x_train, x_test, y_train, y_test = split(df)
 
 ###############Creating Training and Test splits for Gregression model###############
-@st.cache(persist=True)
+@st.cache_data(persist="disk")
 def split(df):
     Y = df['sat']
     X = df[['ordered', 'age', 'speed', 'single', 'dist','income']]
@@ -144,9 +153,9 @@ st.sidebar.subheader("Choose Model")
 classifier = st.sidebar.selectbox("Model", ("Random Forest Regression", "Random Forest classification"))
 
 ###############Visualising SHAP Explantions###############
-@st.cache(persist=True,suppress_st_warning=True)
-def st_shap(plot, height=None):
-    shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
+@st.cache_data(persist="disk")
+def st_shap(_plot, height=None):
+    shap_html = f"<head>{shap.getjs()}</head><body>{_plot.html()}</body>"
     components.html(shap_html, height=height)
 
 ###############Training Random Forest classifier Hyperparameters###############
@@ -195,8 +204,9 @@ if classifier == "Random Forest classification":
         pl.barh(range(len(indices_1)), importances_1[indices_1], color='skyblue', align='center')
         pl.yticks(range(len(indices_1)), [features_1[i] for i in indices_1])
         pl.xlabel('Relative Importance')
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig, bbox_inches='tight')
+        plt.clf()
         
  #############explain model predictions by SHAP###############         
         explainer = shap.TreeExplainer(model)
@@ -238,8 +248,9 @@ if classifier == "Random Forest classification":
          The customer’s age was the second most important feature.""")
         pl.title('SHAP Feature Importance')
         shap.summary_plot(shap_values,x_test,plot_type="bar",show=False)
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig, bbox_inches='tight')
+        plt.clf()
 
         st.subheader("Global Explanations - SHAP Summary Plot")
         with st.expander("Additional notes"):
@@ -249,8 +260,9 @@ if classifier == "Random Forest classification":
              ' A low number of customers age increases the predicted customer satisification probability, a large number of customers age decreases the predicted probability.')
         pl.title('SHAP Summary Plot')
         shap.summary_plot(shap_values[1],x_test,show=False)
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig, bbox_inches='tight')
+        plt.clf()
        
 
         
@@ -320,8 +332,9 @@ if classifier == "Random Forest Regression":
         pl.barh(range(len(indices)), importances[indices], color='steelblue', align='center')
         pl.yticks(range(len(indices)), [features[i] for i in indices])
         pl.xlabel('Relative Importance')
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig, bbox_inches='tight')
+        plt.clf()
 
             
         #############local interpretiability###############
@@ -370,9 +383,10 @@ if classifier == "Random Forest Regression":
                      ' Features are sorted by the sum of the SHAP value magnitudes across all samples.'
                 ' And the biggest difference of this summary plot with the regular feature importance plot is that it shows the positive and negative relationships of the predictors with the target variable.')
         shap.summary_plot(shap_values_2,X_test,show=False)
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
-   
+        fig = plt.gcf()
+        st.pyplot(fig, bbox_inches='tight')
+        plt.clf()
+        
         #############feature (interactive) dependence plot###############
         # SHAP dependence plot
         st.subheader("Global Explanations - The SHAP dependence Plot")
