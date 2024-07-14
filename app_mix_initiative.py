@@ -150,8 +150,8 @@ classifier = st.sidebar.selectbox("Model", ("Random Forest Regression", "Random 
 
 ###############Visualising SHAP Explantions###############
 @st.cache_data(persist="disk")
-def st_shap(plot, height=None):
-    shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
+def st_shap(_plot, height=None):
+    shap_html = f"<head>{shap.getjs()}</head><body>{_plot.html()}</body>"
     components.html(shap_html, height=height)
 
 ###############Training Random Forest classifier Hyperparameters###############
@@ -199,8 +199,9 @@ if classifier == "Random Forest classification":
         pl.barh(range(len(indices_1)), importances_1[indices_1], color='skyblue', align='center')
         pl.yticks(range(len(indices_1)), [features_1[i] for i in indices_1])
         pl.xlabel('Relative Importance')
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig)
+        plt.clf()
 
 #############explain model predictions by SHAP###############
         explainer = shap.TreeExplainer(model)
@@ -241,8 +242,9 @@ if classifier == "Random Forest classification":
          The customer’s age was the second most important feature.""")
         pl.title('SHAP Feature Importance')
         shap.summary_plot(shap_values,x_test,plot_type="bar",show=False)
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig)
+        plt.clf()
 
         st.subheader("2) Global Explanations - SHAP Summary Plot")
         pl.title('SHAP Summary Plot')
@@ -252,8 +254,9 @@ if classifier == "Random Forest classification":
                  A low number of times customers use the food delivery platform reduces the predicted customer satisfaction probability. A large number of used times increases the predicted probability.
              A low number of customers' age increases the predicted customer satisification probability, a large number of customers' age decreases the predicted probability.""")
         shap.summary_plot(shap_values[1],x_test,show=False)
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig)
+        plt.clf()
 
         
         st.subheader("3) Global Explanations - The SHAP Dependence Plot")
@@ -320,8 +323,9 @@ if classifier == "Random Forest Regression":
         pl.barh(range(len(indices)), importances[indices], color='steelblue', align='center')
         pl.yticks(range(len(indices)), [features[i] for i in indices])
         pl.xlabel('Relative Importance')
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig)
+        plt.clf()
 
         #############explain model predictions by SHAP##############
         explainer_1 = shap.TreeExplainer(model_1)
@@ -360,8 +364,9 @@ if classifier == "Random Forest Regression":
          The customer’s age was the second most important feature.""")
         pl.title('SHAP Feature Importance')
         shap.summary_plot(shap_values_2,X_test,plot_type="bar",show=False)
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig)
+        plt.clf()
 
         st.subheader("2) Global Explanations - SHAP Summary Plot")
         pl.title('SHAP Summary Plot')
@@ -371,8 +376,9 @@ if classifier == "Random Forest Regression":
                      ' Features are sorted by the sum of the SHAP value magnitudes across all samples.'
                 ' And the biggest difference of this summary plot with the regular feature importance plot is that it shows the positive and negative relationships of the predictors with the target variable.')
         shap.summary_plot(shap_values_2,X_test,show=False)
-        st.pyplot(bbox_inches='tight')
-        pl.clf()
+        fig = plt.gcf()
+        st.pyplot(fig)
+        plt.clf()
 
 
         #############feature (interactive) dependence plot###############
