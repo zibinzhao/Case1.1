@@ -158,9 +158,8 @@ st.sidebar.header("3. Choose model")
 classifier = st.sidebar.selectbox("Model", ("Random Forest Regression", "Random Forest classification"))
 
 ###############Visualising SHAP Explantions###############
-@st.cache_data(persist="disk")
-def st_shap(_plot, height=None):
-    shap_html = f"<head>{shap.getjs()}</head><body>{_plot.html()}</body>"
+def st_shap(plot, height=None):
+    shap_html = f"<head>{shap.getjs()}</head><body>{plot.html()}</body>"
     components.html(shap_html, height=height)
 
 ###############Training Random Forest classifier Hyperparameters###############
